@@ -1,4 +1,24 @@
-class Tile {
+import { objToRgb, isOutOfBounds } from "./utils.js";
+
+import { Animation, AnimationType } from "./animations.js";
+
+import {
+  ctx,
+  text,
+  fill,
+  rect,
+  circle,
+  drawImage,
+  loadImage,
+} from "./canvas.js";
+
+import { game } from "./settings.js";
+
+import { GAME_STATE } from "./game.js";
+
+const flagImg = loadImage("flag.png");
+
+export class Tile {
   constructor(x, y) {
     this.position = { x, y };
     this.value = 0;
@@ -137,8 +157,8 @@ class Tile {
     }
 
     if (this.isHighlighted) {
-      fill(this.highlightColor)
-      rect(0, 0, this.size, this.size)
+      fill(this.highlightColor);
+      rect(0, 0, this.size, this.size);
     }
 
     const offset = Math.floor(this.size / 2);

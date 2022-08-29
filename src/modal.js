@@ -1,3 +1,6 @@
+import { GAME_STATE, gameSetup, restartGame } from './game.js'
+import { GameMode } from "./settings.js"
+
 const parentModal = document.querySelector(".modal");
 
 const startModal = parentModal.querySelector("#main-modal");
@@ -13,6 +16,18 @@ const bombsInput = inputs.querySelector("#bombs-input");
 const gameOverModal = parentModal.querySelector("#gameover-modal")
 const gameOverMessageModal = gameOverModal.querySelector('span.modal-content-message')
 const restartBtn = gameOverModal.querySelector('button')
+
+export function showMessage(content, callback) {
+  if (callback) callback() 
+
+  const others = parentModal.querySelectorAll('.modal-content');
+  others.forEach(modal => modal.style.display = "none")
+
+  gameOverMessageModal.textContent = content;
+
+  parentModal.style.display = "flex";
+  gameOverModal.style.display = "flex";
+}
 
 options.addEventListener("change", (e) => {
   inputs.style.display = e.target.value === "custom" ? "flex" : "none";
@@ -50,14 +65,4 @@ function closeModal(callback) {
   parentModal.style.display = "none";
 }
 
-function showMessage(content, callback) {
-  if (callback) callback() 
 
-  const others = parentModal.querySelectorAll('.modal-content');
-  others.forEach(modal => modal.style.display = "none")
-
-  gameOverMessageModal.textContent = content;
-
-  parentModal.style.display = "flex";
-  gameOverModal.style.display = "flex";
-}

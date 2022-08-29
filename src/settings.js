@@ -1,5 +1,6 @@
-const game = {
-  frameCount: 0,
+import { canvas } from "./canvas.js";
+
+export const game = {
   totalBombs: 10,
   colors: {
     text: { r: 50, g: 50, b: 50 },
@@ -21,20 +22,20 @@ const game = {
   },
 };
 
-const GameMode = {
+export const GameMode = {
   EASY: 0,
   MEDIUM: 1,
   HARD: 2,
   CUSTOM: 100,
 };
 
-const GameModeDimensions = {
-  0: { cols: 10, rows: 08, bombs: 10 },
+export const GameModeDimensions = {
+  0: { cols: 10, rows: 8, bombs: 10 },
   1: { cols: 18, rows: 14, bombs: 40 },
   2: { cols: 24, rows: 20, bombs: 99 },
 };
 
-function updateResolution() {
+export function updateResolution() {
   const { cols, rows } = game.settings;
 
   const ratio = window.outerHeight / window.outerWidth;
@@ -48,8 +49,8 @@ function updateResolution() {
   let width = cols * tileSize;
   let height = rows * tileSize;
 
-  canv.style.width = `${width}px`;
-  canv.style.height = `${height}px`;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
 
   const scale = Math.floor(window.devicePixelRatio) || 1;
 
@@ -57,13 +58,13 @@ function updateResolution() {
   height = height * scale;
   tileSize = tileSize * scale;
 
-  canv.width = width;
-  canv.height = height;
+  canvas.width = width;
+  canvas.height = height;
 
   updateSettings(width, height, tileSize, scale);
 }
 
-function setDimensions(dimensions) {
+export function setDimensions(dimensions) {
   const { cols, rows, bombs } = dimensions;
 
   game.settings.cols = cols;
@@ -76,11 +77,11 @@ function setDimensions(dimensions) {
   }
 }
 
-function setTotalBombs(bombs) {
+export function setTotalBombs(bombs) {
   game.totalBombs = bombs;
 }
 
-function updateSettings(width, height, tileSize, scale) {
+export function updateSettings(width, height, tileSize, scale) {
   game.settings.width = width;
   game.settings.height = height;
   game.settings.tileSize = tileSize;

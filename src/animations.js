@@ -1,9 +1,15 @@
-const AnimationType = {
+import {
+  clamp,
+  lerp,
+  lerpRGB,
+} from './utils.js'
+
+export const AnimationType = {
   color: 0,
   scale: 1,
 };
 
-class Animation {
+export class Animation {
   constructor(from, to, delay, type) {
     this.startTime = 0;
     this.delay = delay;

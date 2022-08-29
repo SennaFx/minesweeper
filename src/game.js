@@ -1,4 +1,19 @@
-const GAME_STATE = {
+import { Tile } from "./tile.js";
+
+import {
+  game,
+  GameMode,
+  GameModeDimensions,
+  setDimensions,
+  updateResolution,
+} from './settings.js'
+
+import {getTile, getIndices, distance} from './utils.js'
+import {showMessage} from './modal.js'
+
+import Mouse from "./mouse.js";
+
+export const GAME_STATE = {
   paused: true,
   firstClick: true,
   revealeds: 0,
@@ -8,7 +23,7 @@ const GAME_STATE = {
   bombs: [],
 };
 
-function restartGame() {
+export function restartGame() {
   GAME_STATE.firstClick = true;
   GAME_STATE.revealeds = 0;
   GAME_STATE.bombs = [];
@@ -17,7 +32,7 @@ function restartGame() {
   gameSetup();
 }
 
-function gameSetup() {
+export function gameSetup() {
   setDimensions(
     GameModeDimensions[GAME_STATE.difficulty] || GAME_STATE.customDimensions
   );
@@ -35,7 +50,7 @@ function gameSetup() {
   GAME_STATE.paused = false;
 }
 
-function gameEnd(won, parent) {
+export function gameEnd(won, parent) {
   if (won) {
     showMessage("you won 😎👍");
     return;
@@ -45,7 +60,7 @@ function gameEnd(won, parent) {
   revealBombs(parent);
 }
 
-function revealBombs(parent = null) {
+export function revealBombs(parent = null) {
   const tile = parent ? parent : GAME_STATE.bombs[0];
   const { animOffset } = game.settings;
 
@@ -56,12 +71,12 @@ function revealBombs(parent = null) {
   });
 }
 
-function checkWin() {
+export function checkWin() {
   const { rows, cols } = game.settings;
   if (GAME_STATE.revealeds >= rows * cols - game.totalBombs) gameEnd(true);
 }
 
-function generateBombs(n, range, x, y) {
+export function generateBombs(n, range, x, y) {
   while (n > 0) {
     const rndIndex = Math.floor(Math.random() * GAME_STATE.board.length);
     const tile = GAME_STATE.board[rndIndex];
@@ -75,7 +90,7 @@ function generateBombs(n, range, x, y) {
   }
 }
 
-function calculateValues() {
+export function calculateValues() {
   GAME_STATE.bombs.forEach((tile) => {
     const neighbors = tile.getNeighbors(GAME_STATE.board);
     neighbors.forEach((nn) => !nn.isMine && nn.value++);
@@ -83,22 +98,22 @@ function calculateValues() {
 }
 
 // recursive method
-function _propagate(tile, offset) {
-  const { board } = GAME_STATE;
+// function _propagate(tile, offset) {
+//   const { board } = GAME_STATE;
 
-  const { animOffset } = game.settings;
-  const neighbors = tile.getNeighbors(board);
-  for (let i = 0; i < neighbors.length; i++) {
-    const n = neighbors[i];
-    if (n.isMine || n.isRevealed) continue;
+//   const { animOffset } = game.settings;
+//   const neighbors = tile.getNeighbors(board);
+//   for (let i = 0; i < neighbors.length; i++) {
+//     const n = neighbors[i];
+//     if (n.isMine || n.isRevealed) continue;
 
-    n.reveal(offset);
-    if (n.value === 0) propagate(n, n.timeOffset + animOffset);
-  }
-}
+//     n.reveal(offset);
+//     if (n.value === 0) propagate(n, n.timeOffset + animOffset);
+//   }
+// }
 
 // queue method
-function propagate(tile, offset) {
+export function propagate(tile, offset) {
   const { board } = GAME_STATE;
   const { animOffset } = game.settings;
 
@@ -130,7 +145,57 @@ function propagate(tile, offset) {
   }
 }
 
-function gameLoop() {
+Mouse.move = function (mouseX, mouseY) {
+  Mouse.x = mouseX;
+  Mouse.y = mouseY;
+
+  // unhighlight previous
+  if (Mouse.targetTile != null) {
+    Mouse.targetTile.toggleHighlight();
+  }
+
+  // highlight next
+  const tile = getTile(mouseX, mouseY, GAME_STATE.board);
+  if (tile != null) tile.toggleHighlight();
+  Mouse.targetTile = tile;
+};
+
+Mouse.rightClick = function (mouseX, mouseY) {
+  if (GAME_STATE.paused) return;
+
+  const tile = Mouse.targetTile;
+  if (tile == null) return;
+  tile.setFlag();
+};
+
+Mouse.leftClick = function (mouseX, mouseY) {
+  if (GAME_STATE.paused) return;
+
+  const tile = Mouse.targetTile;
+  if (tile == null) return;
+
+  if (GAME_STATE.firstClick) {
+    const { i, j } = getIndices(mouseX, mouseY);
+    generateBombs(game.totalBombs, 3, i, j);
+    calculateValues();
+    GAME_STATE.firstClick = false;
+  }
+
+  if (tile.isRevealed) return;
+
+  if (tile.isMine) {
+    tile.reveal();
+    gameEnd(false, tile);
+    return;
+  }
+
+  tile.reveal();
+  if (tile.value === 0)
+    propagate(tile, tile.timeOffset + game.settings.animOffset);
+  checkWin();
+};
+
+export function gameLoop() {
   for (let tile of GAME_STATE.board) {
     tile.render();
   }
