@@ -1,6 +1,7 @@
 const Mouse = {
-  x: -100,
-  y: -100,
+  x: -1,
+  y: -1,
+  ptargetTile: null,
   targetTile: null,
 
   move(x, y) {},

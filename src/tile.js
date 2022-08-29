@@ -15,8 +15,7 @@ import {
 } from "./canvas.js";
 
 import { game } from "./settings.js";
-
-import { GAME_STATE } from "./game.js";
+import { GAME_STATE, tilesToBeRendered } from "./game.js";
 
 const flagImg = loadImage("flag.png");
 
@@ -99,6 +98,7 @@ export class Tile {
     GAME_STATE.revealeds++;
 
     this.enableAnimations(offset);
+    tilesToBeRendered.push(this)
   }
 
   enableAnimations(offset) {

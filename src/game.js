@@ -10,10 +10,10 @@ import {
 
 import {getTile, getIndices, distance} from './utils.js'
 import {showMessage} from './modal.js'
-
 import { pop, push, scale } from "./canvas.js";
-
 import Mouse from "./mouse.js";
+
+export let tilesToBeRendered = []
 
 export const GAME_STATE = {
   paused: true,
@@ -30,6 +30,11 @@ export function restartGame() {
   GAME_STATE.revealeds = 0;
   GAME_STATE.bombs = [];
   GAME_STATE.board = [];
+
+  Mouse.ptargetTile = null;
+  Mouse.targetTile = null;
+
+  tilesToBeRendered = []
 
   gameSetup();
 }
@@ -50,6 +55,7 @@ export function gameSetup() {
   }
 
   GAME_STATE.paused = false;
+  drawBoard();
 }
 
 export function gameEnd(won, parent) {
@@ -99,21 +105,6 @@ export function calculateValues() {
   });
 }
 
-// recursive method
-// function _propagate(tile, offset) {
-//   const { board } = GAME_STATE;
-
-//   const { animOffset } = game.settings;
-//   const neighbors = tile.getNeighbors(board);
-//   for (let i = 0; i < neighbors.length; i++) {
-//     const n = neighbors[i];
-//     if (n.isMine || n.isRevealed) continue;
-
-//     n.reveal(offset);
-//     if (n.value === 0) propagate(n, n.timeOffset + animOffset);
-//   }
-// }
-
 // queue method
 export function propagate(tile, offset) {
   const { board } = GAME_STATE;
@@ -151,15 +142,23 @@ Mouse.move = function (mouseX, mouseY) {
   Mouse.x = mouseX;
   Mouse.y = mouseY;
 
+  const tile = getTile(mouseX, mouseY, GAME_STATE.board);
+  if (Mouse.ptargetTile == tile) return;
+
   // unhighlight previous
-  if (Mouse.targetTile != null) {
-    Mouse.targetTile.toggleHighlight();
+  if (Mouse.ptargetTile != null && Mouse.ptargetTile.isHighlighted) {
+    Mouse.ptargetTile.toggleHighlight();
+    Mouse.ptargetTile.render();
   }
 
   // highlight next
-  const tile = getTile(mouseX, mouseY, GAME_STATE.board);
-  if (tile != null) tile.toggleHighlight();
+  if (tile != null && !tile.isRevealed)  {
+    tile.toggleHighlight();
+    tile.render();
+  }
+
   Mouse.targetTile = tile;
+  Mouse.ptargetTile = Mouse.targetTile;
 };
 
 Mouse.rightClick = function (mouseX, mouseY) {
@@ -168,6 +167,7 @@ Mouse.rightClick = function (mouseX, mouseY) {
   const tile = Mouse.targetTile;
   if (tile == null) return;
   tile.setFlag();
+  tile.render();
 };
 
 Mouse.leftClick = function (mouseX, mouseY) {
@@ -198,15 +198,40 @@ Mouse.leftClick = function (mouseX, mouseY) {
 };
 
 Mouse.wheel = function(y) {
-  const increment = y * 0.1;
-  game.settings.zoomScale += increment
+  // const increment = y * 0.1;
+  // game.settings.zoomScale += increment
 }
 
-export function gameLoop() {
-  push()
-  scale(game.settings.zoomScale)
+function drawBoard() {
   for (let tile of GAME_STATE.board) {
     tile.render();
   }
-  pop()
+}
+
+export function gameLoop() {
+  // push()
+  // scale(game.settings.zoomScale)
+
+  for (let i = tilesToBeRendered.length - 1; i >= 0; i--) {
+    const tile = tilesToBeRendered[i]
+    tile.render();
+    if (!tile.shouldAnimate) tilesToBeRendered.splice(i, 1)
+  }
+  
+  // pop()
+}
+
+// recursive method
+function _propagate(tile, offset) {
+  const { board } = GAME_STATE;
+
+  const { animOffset } = game.settings;
+  const neighbors = tile.getNeighbors(board);
+  for (let i = 0; i < neighbors.length; i++) {
+    const n = neighbors[i];
+    if (n.isMine || n.isRevealed) continue;
+
+    n.reveal(offset);
+    if (n.value === 0) propagate(n, n.timeOffset + animOffset);
+  }
 }

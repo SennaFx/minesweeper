@@ -28,7 +28,7 @@ canvas.addEventListener("mousemove", (event) => {
 });
 
 canvas.addEventListener('wheel', (e) => {
-  e.preventDefault();
+  // e.preventDefault();
   const delta = e.deltaY < 0 ? 1 : -1;
   Mouse.wheel(delta)
 })

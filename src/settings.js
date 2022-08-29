@@ -1,5 +1,7 @@
 import { canvas } from "./canvas.js";
 
+import {clamp} from './utils.js'
+
 export const game = {
   totalBombs: 10,
   colors: {
@@ -46,6 +48,7 @@ export function updateResolution() {
   let tileSizeX = Math.floor(screenWidth / cols);
   let tileSizeY = Math.floor(screenHeight / rows);
   let tileSize = Math.min(tileSizeX, tileSizeY);
+  tileSize = clamp(tileSize, 26, 80);
 
   let width = cols * tileSize;
   let height = rows * tileSize;
