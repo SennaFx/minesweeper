@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>minesweeper</title>
+    <link href="./style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <main>
+      <canvas id="game" width="800" height="600"></canvas>
+      <div class="modal">
+        <div class="modal-content" id="main-modal">
+          <span>
+            <label for="difficulty">Difficulty: </label>
+            <select id="difficulty" name="difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+              <option value="custom">Custom</option>
+            </select>
+          </span>
+          <div class="inputs">
+            <input id="rows-input" placeholder="rows" min="6" max="100" type="number" />
+            <input id="cols-input" placeholder="columns" min="6" max="100" type="number" />
+            <input id="bombs-input" placeholder="total bombs" min="1" max="10000" type="number" />
+          </div>
+          <button>start</button>
+        </div>
+        <div class="modal-content" id="gameover-modal">
+          <span class="modal-content-message"></span>
+          <button>restart</button>
+        </div>
+      </div>
+    </main>
+    <script src="src/canvas.js"></script>
+    <script src="src/settings.js"></script>
+    <script src="src/utils.js"></script>
+    <script src="src/animations.js"></script>
+    <script src="src/tile.js"></script>
+    <script src="src/game.js"></script>
+    <script src="src/modal.js"></script>
+    <script src="src/main.js"></script>
+  </body>
+</html>
