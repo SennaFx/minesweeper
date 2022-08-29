@@ -6,6 +6,7 @@ const Mouse = {
   move(x, y) {},
   rightClick(x, y) {},
   leftClick(x, y) {},
+  wheel(delta) {},
 };
 
 export default Mouse;

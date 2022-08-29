@@ -11,6 +11,8 @@ import {
 import {getTile, getIndices, distance} from './utils.js'
 import {showMessage} from './modal.js'
 
+import { pop, push, scale } from "./canvas.js";
+
 import Mouse from "./mouse.js";
 
 export const GAME_STATE = {
@@ -195,8 +197,16 @@ Mouse.leftClick = function (mouseX, mouseY) {
   checkWin();
 };
 
+Mouse.wheel = function(y) {
+  const increment = y * 0.1;
+  game.settings.zoomScale += increment
+}
+
 export function gameLoop() {
+  push()
+  scale(game.settings.zoomScale)
   for (let tile of GAME_STATE.board) {
     tile.render();
   }
+  pop()
 }

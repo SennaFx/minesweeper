@@ -1,31 +1,37 @@
 export const canvas = document.getElementById("game");
 export const ctx = canvas.getContext("2d", { alpha: false });
 
-import { game } from './settings.js'
+import { game, scalingFactor } from './settings.js'
 
 import Mouse from "./mouse.js";
 
 canvas.addEventListener("click", (event) => {
   Mouse.leftClick(
-    event.offsetX * game.settings.scale,
-    event.offsetY * game.settings.scale
+    event.offsetX * scalingFactor(),
+    event.offsetY * scalingFactor()
   );
 });
 
 canvas.addEventListener("contextmenu", (event) => {
   event.preventDefault();
   Mouse.rightClick(
-    event.offsetX * game.settings.scale,
-    event.offsetY * game.settings.scale
+    event.offsetX * scalingFactor(),
+    event.offsetY * scalingFactor()
   );
 });
 
 canvas.addEventListener("mousemove", (event) => {
   Mouse.move(
-    event.offsetX * game.settings.scale,
-    event.offsetY * game.settings.scale
+    event.offsetX * scalingFactor(),
+    event.offsetY * scalingFactor()
   );
 });
+
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY < 0 ? 1 : -1;
+  Mouse.wheel(delta)
+})
 
 export function fill(color) {
   ctx.fillStyle = color;
@@ -67,4 +73,16 @@ export function background(color) {
   // fill(color);
   ctx.clearRect(0, 0, game.settings.width, game.settings.height);
   // rect(0, 0, game.settings.width, game.settings.height);
+}
+
+export function push() {
+  ctx.save();
+}
+
+export function pop() {
+  ctx.restore();
+}
+
+export function scale(scale) {
+  ctx.scale(scale, scale)
 }

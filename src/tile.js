@@ -4,6 +4,8 @@ import { Animation, AnimationType } from "./animations.js";
 
 import {
   ctx,
+  push,
+  pop,
   text,
   fill,
   rect,
@@ -141,7 +143,7 @@ export class Tile {
   }
 
   render() {
-    ctx.save();
+    push();
     ctx.translate(this.position.x * this.size, this.position.y * this.size);
 
     // main rect
@@ -184,6 +186,6 @@ export class Tile {
       }
     }
 
-    ctx.restore();
+    pop();
   }
 }

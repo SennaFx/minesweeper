@@ -13,7 +13,8 @@ export const game = {
   settings: {
     width: 800,
     height: 600,
-    scale: 1,
+    zoomScale: 1,
+    prScale: 1,
     cols: 30,
     rows: 20,
     tileSize: 40,
@@ -40,7 +41,7 @@ export function updateResolution() {
 
   const ratio = window.outerHeight / window.outerWidth;
   const screenWidth = Math.floor(window.outerWidth * 0.92);
-  const screenHeight = Math.floor(screenWidth * ratio * 0.95);
+  const screenHeight = Math.floor(screenWidth * ratio * 0.98);
 
   let tileSizeX = Math.floor(screenWidth / cols);
   let tileSizeY = Math.floor(screenHeight / rows);
@@ -52,16 +53,16 @@ export function updateResolution() {
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 
-  const scale = Math.floor(window.devicePixelRatio) || 1;
+  const prScale = Math.floor(window.devicePixelRatio) || 1;
 
-  width = width * scale;
-  height = height * scale;
-  tileSize = tileSize * scale;
+  width = width * prScale;
+  height = height * prScale;
+  tileSize = tileSize * prScale;
 
   canvas.width = width;
   canvas.height = height;
 
-  updateSettings(width, height, tileSize, scale);
+  updateSettings(width, height, tileSize, prScale);
 }
 
 export function setDimensions(dimensions) {
@@ -81,9 +82,13 @@ export function setTotalBombs(bombs) {
   game.totalBombs = bombs;
 }
 
-export function updateSettings(width, height, tileSize, scale) {
+export function updateSettings(width, height, tileSize, prScale) {
   game.settings.width = width;
   game.settings.height = height;
   game.settings.tileSize = tileSize;
-  game.settings.scale = scale;
+  game.settings.prScale = prScale;
+}
+
+export function scalingFactor() {
+  return (1 / game.settings.zoomScale) * game.settings.prScale;
 }
